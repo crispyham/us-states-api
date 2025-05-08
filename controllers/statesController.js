@@ -100,13 +100,15 @@ exports.getNickname = (req, res) => {
 
 // GET /states/:state/population
 exports.getPopulation = (req, res) => {
-  const code = req.params.state.toUpperCase();
-  if (!isValidStateCode(code)) {
-    return res.status(400).json({ message: 'Invalid state abbreviation parameter' });
-  }
-  const state = getStateDataByCode(code);
-  res.json({ state: state.state, population: state.population });
-};
+    const code = req.params.state.toUpperCase();
+    if (!isValidStateCode(code)) {
+      return res.status(400).json({ message: 'Invalid state abbreviation parameter' });
+    }
+    const state = getStateDataByCode(code);
+    // Format the population with commas and as a string
+    const formattedPopulation = state.population.toLocaleString('en-US');
+    res.json({ state: state.state, population: formattedPopulation });
+  };
 
 // GET /states/:state/admission
 exports.getAdmission = (req, res) => {
