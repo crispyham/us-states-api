@@ -64,18 +64,19 @@ exports.getState = async (req, res) => {
 
 // GET /states/:state/funfact
 exports.getRandomFunFact = async (req, res) => {
-  const code = req.params.state.toUpperCase();
-  if (!isValidStateCode(code)) {
-    return res.status(400).json({ message: 'Invalid state abbreviation parameter' });
-  }
-  const funFactsDoc = await State.findOne({ stateCode: code });
-  if (!funFactsDoc || !funFactsDoc.funfacts || funFactsDoc.funfacts.length === 0) {
-    return res.status(404).json({ message: 'No Fun Facts found for this ${state.state}' });
-  }
-  const randomFact =
-    funFactsDoc.funfacts[Math.floor(Math.random() * funFactsDoc.funfacts.length)];
-  res.json({ funfact: randomFact });
-};
+    const code = req.params.state.toUpperCase();
+    if (!isValidStateCode(code)) {
+      return res.status(400).json({ message: 'Invalid state abbreviation parameter' });
+    }
+    const state = getStateDataByCode(code);
+    const funFactsDoc = await State.findOne({ stateCode: code });
+    if (!funFactsDoc || !funFactsDoc.funfacts || funFactsDoc.funfacts.length === 0) {
+      return res.status(404).json({ message: `No Fun Facts found for ${state.state}` });
+    }
+    const randomFact =
+      funFactsDoc.funfacts[Math.floor(Math.random() * funFactsDoc.funfacts.length)];
+    res.json({ funfact: randomFact });
+  };
 
 // GET /states/:state/capital
 exports.getCapital = (req, res) => {
