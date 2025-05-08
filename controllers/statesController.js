@@ -175,23 +175,24 @@ exports.updateFunFact = async (req, res) => {
 
 // DELETE /states/:state/funfact
 exports.deleteFunFact = async (req, res) => {
-  const code = req.params.state.toUpperCase();
-  if (!isValidStateCode(code)) {
-    return res.status(400).json({ message: 'Invalid state abbreviation parameter' });
-  }
-  const { index } = req.body;
-  if (!index) {
-    return res.status(400).json({ message: 'State fun fact index value required' });
-  }
-  const funFactsDoc = await State.findOne({ stateCode: code });
-  if (!funFactsDoc || !Array.isArray(funFactsDoc.funfacts) || funFactsDoc.funfacts.length === 0) {
-    return res.status(404).json({ message: 'No Fun Facts found for this state' });
-  }
-  const idx = index - 1; // Convert to zero-based
-  if (idx < 0 || idx >= funFactsDoc.funfacts.length) {
-    return res.status(400).json({ message: 'No Fun Fact found at that index for the state' });
-  }
-  funFactsDoc.funfacts.splice(idx, 1);
-  await funFactsDoc.save();
-  res.json(funFactsDoc);
-};
+    const code = req.params.state.toUpperCase();
+    if (!isValidStateCode(code)) {
+      return res.status(400).json({ message: 'Invalid state abbreviation parameter' });
+    }
+    const state = getStateDataByCode(code);
+    const { index } = req.body;
+    if (!index) {
+      return res.status(400).json({ message: 'State fun fact index value required' });
+    }
+    const funFactsDoc = await State.findOne({ stateCode: code });
+    if (!funFactsDoc || !Array.isArray(funFactsDoc.funfacts) || funFactsDoc.funfacts.length === 0) {
+      return res.status(404).json({ message: `No Fun Facts found for ${state.state}` });
+    }
+    const idx = index - 1; // Convert to zero-based
+    if (idx < 0 || idx >= funFactsDoc.funfacts.length) {
+      return res.status(400).json({ message: `No Fun Fact found at that index for ${state.state}` });
+    }
+    funFactsDoc.funfacts.splice(idx, 1);
+    await funFactsDoc.save();
+    res.json(funFactsDoc);
+  };
