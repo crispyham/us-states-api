@@ -122,23 +122,29 @@ exports.getAdmission = (req, res) => {
 
 // POST /states/:state/funfact
 exports.addFunFacts = async (req, res) => {
-  const code = req.params.state.toUpperCase();
-  if (!isValidStateCode(code)) {
-    return res.status(400).json({ message: 'Invalid state abbreviation parameter' });
-  }
-  const { funfacts } = req.body;
-  if (!funfacts || !Array.isArray(funfacts) || funfacts.length === 0) {
-    return res.status(400).json({ message: 'State fun facts value required' });
-  }
-  let funFactsDoc = await State.findOne({ stateCode: code });
-  if (funFactsDoc) {
-    funFactsDoc.funfacts.push(...funfacts);
-    await funFactsDoc.save();
-  } else {
-    funFactsDoc = await State.create({ stateCode: code, funfacts });
-  }
-  res.json(funFactsDoc);
-};
+    const code = req.params.state.toUpperCase();
+    if (!isValidStateCode(code)) {
+      return res.status(400).json({ message: 'Invalid state abbreviation parameter' });
+    }
+    const { funfacts } = req.body;
+    if (!funfacts) {
+      return res.status(400).json({ message: 'State fun facts value required' });
+    }
+    if (!Array.isArray(funfacts)) {
+      return res.status(400).json({ message: 'State fun facts value must be an array' });
+    }
+    if (funfacts.length === 0) {
+      return res.status(400).json({ message: 'State fun facts array must not be empty' });
+    }
+    let funFactsDoc = await State.findOne({ stateCode: code });
+    if (funFactsDoc) {
+      funFactsDoc.funfacts.push(...funfacts);
+      await funFactsDoc.save();
+    } else {
+      funFactsDoc = await State.create({ stateCode: code, funfacts });
+    }
+    res.json(funFactsDoc);
+  };
 
 // PATCH /states/:state/funfact
 exports.updateFunFact = async (req, res) => {
