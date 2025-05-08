@@ -35,3 +35,8 @@ PATCH Endpoints
 DELETE Endpoints
 /states/:state/funfact --Delete a fun fact at a specific index.
   { "index": 1 }
+
+Deployment
+Deployable to platforms like Render, Glitch, or Heroku.
+Set environment variables in your platform's dashboard.
+Ensure your MongoDB Atlas cluster allows connections from your deployment platform.
